@@ -38,12 +38,24 @@ int main()
     }
     std::cout << "Server listening on port 23232..." << std::endl;
 
+/*
     // Accept connection from client
     newSocket = accept(serverSocket, (struct sockaddr*)&clientAddr, &addrSize);
     if(newSocket == -1)
     {
         std::cerr << "Error accepting connection" << std::endl;
         return 1;
+    }
+*/
+    // Stay on and accept client connections in a loop
+    while(true)
+    {
+        newSocket = accept(serverSocket, (struct sockaddr*)&clientAddr,&addrSize);
+        if(newSocket == -1)
+        {
+            std::cerr << "Error accepting connection" << std::endl;
+            return 1;
+        }
     }
 
     // Receive data from client
