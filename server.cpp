@@ -10,7 +10,7 @@ int main()
     socklen_t addrSize = sizeof(struct sockaddr_in);
     char buffer[1024];
 
-    // Create socket
+    // Create socket using IPv4 address and TCP protocol
     serverSocket = socket(AF_INET, SOCK_STREAM, 0);
     if(serverSocket == -1)
     {
@@ -18,19 +18,20 @@ int main()
         return 1;
     }
 
-    // Prepare server address structure
-    serverAddr.sin_family = AF_INET;
-    serverAddr.sin_port = htons(23232); // Port number
+    // Prepare server address structure.
+    serverAddr.sin_family = AF_INET; // Use IPv4
+    serverAddr.sin_port = htons(23232); // Port number (converted to network byte)
     serverAddr.sin_addr.s_addr = INADDR_ANY; // Bind to all available interfaces
 
-    // Bind socket to address and port
+    // Bind socket to the specified address and port.
     if(bind(serverSocket, (struct sockaddr*)&serverAddr, sizeof(serverAddr)) == -1)
     {
         std::cerr << "Error binding" << std::endl;
         return 1;
     }
     
-    // Listen for incoming connection
+    // Listen for incoming connections on the socket,
+    // with a maximum backlog of 5 pending connections.
     if(listen(serverSocket, 5) == -1)
     {
         std::cerr << "Error listening" << std::endl;
@@ -39,7 +40,7 @@ int main()
     std::cout << "Server listening on port 23232..." << std::endl;
 
 /*
-    // Accept connection from client
+    // Accept 1 connection from client
     newSocket = accept(serverSocket, (struct sockaddr*)&clientAddr, &addrSize);
     if(newSocket == -1)
     {
@@ -47,6 +48,7 @@ int main()
         return 1;
     }
 */
+
     // Stay on and accept client connections in a loop
     while(true)
     {
@@ -56,18 +58,21 @@ int main()
             std::cerr << "Error accepting connection" << std::endl;
             return 1;
         }
-    }
+    
 
-    // Receive data from client
-    ssize_t bytesRead;
-    while((bytesRead = recv(newSocket, buffer, sizeof(buffer), 0)) > 0)
-    {
-        std::cout << "Received: " << buffer << std::endl;
-        send(newSocket, buffer, bytesRead, 0); // Echo data back to client
-        memset(buffer, 0, sizeof(buffer)); // Clear buffer
+        // Receive data from the client into the 'buffer' array.
+        ssize_t bytesRead;
+        while((bytesRead = recv(newSocket, buffer, sizeof(buffer), 0)) > 0)
+        {
+            std::cout << "Received: " << buffer << std::endl;
+            // Send the received data back to the client (echo).
+            send(newSocket, buffer, bytesRead, 0);
+            // Clear the 'buffer' array for the next iteration.
+            memset(buffer, 0, sizeof(buffer));
+        }
     }
-
-    // Close sockets
+    
+    // Close sockets. Currently never reached!
     close(newSocket);
     close(serverSocket);
 
