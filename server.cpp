@@ -8,7 +8,7 @@ int main()
     int serverSocket, newSocket;
     struct sockaddr_in serverAddr, clientAddr;
     socklen_t addrSize = sizeof(struct sockaddr_in);
-    char buffer[1024];
+    char buffer[1024]; // Declare a character array (buffer) to store data sent and received.
 
     // Create socket using IPv4 address and TCP protocol
     serverSocket = socket(AF_INET, SOCK_STREAM, 0);
@@ -59,7 +59,6 @@ int main()
             return 1;
         }
     
-
         // Receive data from the client into the 'buffer' array.
         ssize_t bytesRead;
         while((bytesRead = recv(newSocket, buffer, sizeof(buffer), 0)) > 0)
@@ -71,7 +70,7 @@ int main()
             memset(buffer, 0, sizeof(buffer));
         }
     }
-    
+
     // Close sockets. Currently never reached!
     close(newSocket);
     close(serverSocket);

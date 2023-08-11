@@ -1,16 +1,16 @@
-#include <iostream>
-#include <cstring>
-#include <unistd.h>
-#include <arpa/inet.h>
+#include <iostream> // Library for basic input and output operations.
+#include <cstring> // C-style string manipulation functions.
+#include <unistd.h> // For POSIX operating system API functions.
+#include <arpa/inet.h> // For functions to manipulate IP addresses.
 
 
 int main()
 {
     int clientSocket;
-    struct sockaddr_in serverAddr;
-    char buffer[1024];
+    struct sockaddr_in serverAddr; // Declare a structure to hold the server address information.
+    char buffer[1024]; // Declare a character array (buffer) to store data sent and received.
 
-    // Create socket
+    // Create a socket using the IPv4 address and TCP protocol.
     clientSocket = socket(AF_INET, SOCK_STREAM, 0);
     if(clientSocket == -1)
     {
@@ -18,23 +18,23 @@ int main()
         return 1;
     }
 
-    // Prepare server address structure
-    serverAddr.sin_family = AF_INET;
-    serverAddr.sin_port = htons(23232); // Port number
+    // Prepare server address structure.
+    serverAddr.sin_family = AF_INET; // Use IPv4
+    serverAddr.sin_port = htons(23232); // Port number (converted to network byte order)
     serverAddr.sin_addr.s_addr = inet_addr("127.0.0.1"); // Server IP address
 
-    // Connect to server
+    // Connect to server or show error.
     if(connect(clientSocket, (struct sockaddr*)&serverAddr, sizeof(serverAddr)) == -1)
     {
         std::cerr << "Error connecting" << std::endl;
         return 1;
     }
 
-    // Send data to server
+    // Send data to the server.
     const char* message = "Hello, server!";
     send(clientSocket, message, strlen(message), 0);
 
-    // Receive response from server
+    // Receive response from server.
     ssize_t bytesRead = recv(clientSocket, buffer, sizeof(buffer), 0);
     if(bytesRead > 0)
     {
