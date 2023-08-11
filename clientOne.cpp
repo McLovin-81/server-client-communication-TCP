@@ -31,7 +31,7 @@ int main()
     }
 
     // Send data to the server.
-    const char* message = "Hello, server!";
+    const char* message = "Hello, server(1)!";
     send(clientSocket, message, strlen(message), 0);
 
     // Receive response from server.

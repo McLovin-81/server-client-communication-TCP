@@ -65,7 +65,7 @@ int main()
         {
             std::cout << "Received: " << buffer << std::endl;
             // Send the received data back to the client (echo).
-            send(newSocket, buffer, bytesRead, 0);
+            send(newSocket, /*buffer*/ "Hello back", bytesRead, 0);
             // Clear the 'buffer' array for the next iteration.
             memset(buffer, 0, sizeof(buffer));
         }
