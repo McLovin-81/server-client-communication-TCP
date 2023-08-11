@@ -1,11 +1,12 @@
+## Language Auswahl / Language Selection
+
+- [German](#deutsch)
+- [English](#english)
+
+## Deutsch
 # Sockets README
 
 Sockets in der Computer-Programmierung ermöglichen Computern, über Netzwerke miteinander zu kommunizieren, ähnlich wie Telefonate zwischen Menschen.
-
-## Language Auswahl / Language Selection
-
-- [Deutsch / German](#deutsch)
-- [English](#english)
 
 ## Ähnlichkeit zu Telefonen
 
@@ -56,11 +57,12 @@ Dieser Mechanismus ermöglicht es dem Server, mehrere Clients gleichzeitig zu be
 
 ---
 
-## English
-
-Sockets in computer programming allow computers to communicate with each other over networks, similar to phone conversations between people.
-
-## Deutsch
 
 Sockets in der Computer-Programmierung ermöglichen Computern, über Netzwerke miteinander zu kommunizieren, ähnlich wie Telefonate zwischen Menschen.
 
+
+
+
+## English
+
+Sockets in computer programming allow computers to communicate with each other over networks, similar to phone conversations between people.
