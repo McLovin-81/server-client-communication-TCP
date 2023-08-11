@@ -1,7 +1,7 @@
 #include <iostream>
-#include <cstring>
-#include <unistd.h>
-#include <arpa/inet.h>
+#include <cstring> // For C-style string manipulation functions (memset: Used to fill memory with a particular value).
+#include <unistd.h> // For POSIX operating system API (System calls like 'close').
+#include <arpa/inet.h> // For functions to manipulate IP addresses.
 
 int main()
 {
