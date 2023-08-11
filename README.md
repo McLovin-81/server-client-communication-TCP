@@ -58,13 +58,6 @@ This mechanism allows the server to handle multiple clients simultaneously by cr
 
 ---
 
-
-
-## Deutsch
-
-Sockets in der Computer-Programmierung ermöglichen Computern, über Netzwerke miteinander zu kommunizieren, ähnlich wie Telefonate zwischen Menschen.
-
-
 ## Deutsch
 
 Sockets in der Computer-Programmierung ermöglichen Computern, über Netzwerke miteinander zu kommunizieren, ähnlich wie Telefonate zwischen Menschen.
