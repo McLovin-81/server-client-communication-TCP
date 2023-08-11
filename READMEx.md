@@ -1,9 +1,3 @@
-## Language Auswahl / Language Selection
-
-- [German](#deutsch)
-- [English](#english)
-
-## Deutsch
 # Sockets README
 
 Sockets in der Computer-Programmierung ermöglichen Computern, über Netzwerke miteinander zu kommunizieren, ähnlich wie Telefonate zwischen Menschen.
@@ -54,15 +48,3 @@ So funktioniert der Prozess:
 4. Nachdem die Kommunikation abgeschlossen ist oder der Client die Verbindung trennt, schließt der Server den `newSocket`.
 
 Dieser Mechanismus ermöglicht es dem Server, mehrere Clients gleichzeitig zu behandeln, indem separate `newSocket`-Instanzen für jeden Client erstellt werden, um sicherzustellen, dass die Kommunikation jedes Clients isoliert bleibt.
-
----
-
-
-Sockets in der Computer-Programmierung ermöglichen Computern, über Netzwerke miteinander zu kommunizieren, ähnlich wie Telefonate zwischen Menschen.
-
-
-
-
-## English
-
-Sockets in computer programming allow computers to communicate with each other over networks, similar to phone conversations between people.

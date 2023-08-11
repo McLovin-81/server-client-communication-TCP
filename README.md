@@ -1,5 +1,72 @@
 # Sockets README
 
+## Language Selection
+
+- [German](#deutsch)
+- [English](#english)
+
+## English
+
+Sockets in computer programming allow computers to communicate with each other over networks, similar to phone conversations between people.
+
+## Similarity to Phones
+
+- **IP Address and Port:** Each computer has an IP address in the network. The port is like an application number on the phone.
+
+## Types of Sockets
+
+- **Stream Sockets (TCP):** Similar to a phone call, words arrive in order. Information security is ensured.
+- **Datagram Sockets (UDP):** Similar to sending postcards. Messages can arrive in any order, errors are possible.
+
+## Server and Client
+
+- **Server:** Waits for calls, like a receptionist. Directs calls.
+- **Client:** Makes calls to obtain information.
+
+## Connection Establishment
+
+- **TCP:** Connection in three steps: "Hello" - "Hello, I'm listening" - "Okay, we can talk".
+- **UDP:** No formal connection setup, messages are sent without prior negotiation.
+
+## Socket Actions
+
+- **bind:** Connects IP address and port to socket.
+- **listen:** Puts socket in wait mode for calls.
+- **accept:** Accepts calls, opens connection.
+- **connect:** Establishes connection.
+- **send:** Sends information.
+- **recv:** Receives information.
+
+## The `newSocket` Variable in Server Code
+
+The `newSocket` variable in the server code represents a new socket that is created to handle communication with a specific client. Its role in the context of the server-client communication process is explained as follows:
+
+1. **Server Socket (`serverSocket`):** This socket is created using the `socket()` function and is used for listening for incoming client connections. It remains open throughout the server's lifetime and is responsible for accepting new client connections.
+
+2. **Client Socket (`newSocket`):** When a client connects to the server, the `accept()` function is used to create a new socket, referred to as the `newSocket`, to handle communication with that specific client. This new socket is unique to each client connection and is used to send and receive data between the server and that particular client.
+
+Think of the `serverSocket` as the reception desk of a hotel, where guests (clients) come in and get assigned their own room (the `newSocket`) for private conversations (data exchange) with the receptionist (server).
+
+Here's how the process works:
+
+1. The server creates a listening socket (`serverSocket`) and starts listening for incoming connections.
+2. When a client connects, the server uses `accept()` to create a new socket (`newSocket`) dedicated to that client.
+3. The server and client can then exchange data through their respective sockets (`newSocket` on the server side and a similar socket on the client side).
+4. After the communication is done or the client disconnects, the server closes the `newSocket`.
+
+This mechanism allows the server to handle multiple clients simultaneously by creating separate `newSocket` instances for each client, ensuring that each client's communication remains isolated.
+
+---
+
+
+
+## Deutsch
+
+Sockets in der Computer-Programmierung ermöglichen Computern, über Netzwerke miteinander zu kommunizieren, ähnlich wie Telefonate zwischen Menschen.
+
+
+## Deutsch
+
 Sockets in der Computer-Programmierung ermöglichen Computern, über Netzwerke miteinander zu kommunizieren, ähnlich wie Telefonate zwischen Menschen.
 
 ## Ähnlichkeit zu Telefonen
