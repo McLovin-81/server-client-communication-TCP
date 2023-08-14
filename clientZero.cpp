@@ -21,7 +21,7 @@ int main()
     // Prepare server address structure.
     serverAddr.sin_family = AF_INET; // Use IPv4
     serverAddr.sin_port = htons(23232); // Port number (converted to network byte order)
-    serverAddr.sin_addr.s_addr = inet_addr("127.0.0.1"); // Server IP address
+    serverAddr.sin_addr.s_addr = inet_addr("10.127.220.54"); // Server IP address // new: 10.127.220.54 // old: "127.0.0.1" 
 
     // Connect to server or show error.
     if(connect(clientSocket, (struct sockaddr*)&serverAddr, sizeof(serverAddr)) == -1)

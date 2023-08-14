@@ -67,11 +67,7 @@ int main()
         ssize_t bytesRead;
         while((bytesRead = recv(newSocket, buffer, sizeof(buffer), 0)) > 0)
         {
-<<<<<<< HEAD
-            std::cout << "Received from client " << inet_ntoa(clientAddr.sin_addr) << ": " << buffer << std::endl;
-=======
-            std::cout << "Received from " << clientIP << ": " << buffer << std::endl;
->>>>>>> ea4371f7cdcf7b293b97aeae6437e0ff3c901004
+            std::cout << "Received from client " << clientIP << ": " << buffer << std::endl;
             // Send the received data back to the client (echo).
             send(newSocket, /*buffer*/ "Hello back", bytesRead, 0);
             // Clear the 'buffer' array for the next iteration.
