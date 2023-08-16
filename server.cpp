@@ -11,7 +11,7 @@ int main()
     char buffer[1024]; // Declare a character array (buffer) to store data sent and received.
 
     // Create socket using IPv4 address and TCP protocol
-    serverSocket = socket(AF_INET, SOCK_STREAM, 0);
+    serverSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
     if(serverSocket == -1)
     {
         std::cerr << "Error creating socket" << std::endl;
