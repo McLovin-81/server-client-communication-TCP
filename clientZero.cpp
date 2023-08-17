@@ -34,14 +34,33 @@ int main()
     {
         // Send data to the server.
         const char* message = "Hello, server!";
+        uint32_t msgLeng = htonl(strlen(message)); // Convert message length to nertwork byte order
+
+        // Send message length and then the message content.
+        send(clientSocket, &msgLeng, sizeof(msgLeng), 0);
         send(clientSocket, message, strlen(message), 0);
 
         // Receive response from server.
-        ssize_t bytesRead = recv(clientSocket, buffer, sizeof(buffer), 0);
-        if(bytesRead > 0)
+        uint32_t responseLength = 0;
+
+        ssize_t bytesRead = recv(clientSocket, &responseLength, sizeof(responseLength), 0);
+        if(bytesRead <= 0)
         {
-            std::cout << "Response from server " << inet_ntoa(serverAddr.sin_addr) << ": " << buffer << std::endl;
+            std::cerr << "Error receiving message length" << std::endl;
+            break;
         }
+
+        responseLength = ntohl(responseLength); // Convert network byte order to host byte order
+
+        // Receive Response (echo)
+        bytesRead = recv(clientSocket, buffer, responseLength, 0);
+        if(bytesRead <= 0)
+        {
+            std::cerr << "Error receiving message" << std::endl;
+            break;
+        }
+
+        std::cout << "Response from server " << inet_ntoa(serverAddr.sin_addr) << ": " << buffer << std::endl;
 
         sleep(1); // Delay between messages (optional)
     }

@@ -43,7 +43,7 @@ int main()
     while(true)
     {
         // newSocket = Client connection.
-        newSocket = accept(serverSocket, (struct sockaddr*)&clientAddr,&addrSize);
+        newSocket = accept(serverSocket, (struct sockaddr*)&clientAddr, &addrSize);
         if(newSocket == -1)
         {
             std::cerr << "Error accepting connection" << std::endl;
@@ -54,13 +54,38 @@ int main()
         char clientIP[INET_ADDRSTRLEN];  // INET_ADDRSTRLEN is a constant for IPv4 address length
         inet_ntop(AF_INET, &(clientAddr.sin_addr), clientIP, INET_ADDRSTRLEN);
     
-        // Receive data from the client into the 'buffer' array.
-        ssize_t bytesRead;
-        while((bytesRead = recv(newSocket, buffer, sizeof(buffer), 0)) > 0)
+        // Receive and process messages from the client.
+        while(true)
         {
+            uint32_t msgLength = 0;
+            ssize_t bytesRead = recv(newSocket, &msgLength, sizeof(msgLength), 0);
+
+            if(bytesRead <= 0)
+            {
+                std::cerr << "Error receiving message length" << std::endl;
+                break;
+            }
+
+            msgLength = ntohl(msgLength); // Convert network byte order to host byte order.
+
+            // Receive the actual message.
+            bytesRead = recv(newSocket, buffer, msgLength, 0);
+            if(bytesRead <= 0)
+            {
+                std::cerr << "Error receiving message" << std::endl;
+                break;
+            }
+
             std::cout << "Received from client " << clientIP << ": " << buffer << std::endl;
-            // Send the received data back to the client (echo).
-            send(newSocket, /*buffer*/ "Hello back", bytesRead, 0);
+
+            // Echo message
+            const char* echoMessage = "Hello Back";
+            uint32_t echoLength = htonl(strlen(echoMessage)); // Convert echo message length to network byte order.
+
+            // Send echo back to client.
+            send(newSocket, &echoLength, sizeof(echoLength), 0); // Send the length first
+            send(newSocket, echoMessage, strlen(echoMessage), 0); // Send the echo message itself
+
             // Clear the 'buffer' array for the next iteration.
             memset(buffer, 0, sizeof(buffer));
         }
@@ -72,3 +97,7 @@ int main()
 
     return 0;
 }
+
+/**
+ * Do i need the breaks after error message?
+*/
