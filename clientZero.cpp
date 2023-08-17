@@ -21,7 +21,7 @@ int main()
     // Prepare server address structure.
     serverAddr.sin_family = AF_INET; // Use IPv4
     serverAddr.sin_port = htons(23232); // Port number (converted to network byte order)
-    serverAddr.sin_addr.s_addr = inet_addr("10.127.220.39"); // Server IP address
+    serverAddr.sin_addr.s_addr = inet_addr("127.0.0.1"); // Server IP address vm -> 10.127.220.39, MacBook -> LocalHost 127.0.0.1
 
     // Connect to server or show error.
     if(connect(clientSocket, (struct sockaddr*)&serverAddr, sizeof(serverAddr)) == -1)
@@ -30,15 +30,20 @@ int main()
         return 1;
     }
 
-    // Send data to the server.
-    const char* message = "Hello, server!";
-    send(clientSocket, message, strlen(message), 0);
-
-    // Receive response from server.
-    ssize_t bytesRead = recv(clientSocket, buffer, sizeof(buffer), 0);
-    if(bytesRead > 0)
+    while(true)
     {
-        std::cout << "Response from server " << inet_ntoa(serverAddr.sin_addr) << ": " << buffer << std::endl;
+        // Send data to the server.
+        const char* message = "Hello, server!";
+        send(clientSocket, message, strlen(message), 0);
+
+        // Receive response from server.
+        ssize_t bytesRead = recv(clientSocket, buffer, sizeof(buffer), 0);
+        if(bytesRead > 0)
+        {
+            std::cout << "Response from server " << inet_ntoa(serverAddr.sin_addr) << ": " << buffer << std::endl;
+        }
+
+        sleep(1); // Delay between messages (optional)
     }
 
     // Close socket
