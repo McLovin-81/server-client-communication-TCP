@@ -6,3 +6,5 @@
 
 # Unignore Makefiles recursively
 !**/Makefile
+
+tempCodeRunnerFile.cpp
