@@ -21,14 +21,11 @@ int main()
     // Prepare server address structure.
     serverAddr.sin_family = AF_INET; // Use IPv4
     serverAddr.sin_port = htons(23232); // Port number (converted to network byte order)
-    serverAddr.sin_addr.s_addr = inet_addr("127.0.0.1"); // Server IP address vm -> 10.127.220.39, MacBook -> LocalHost 127.0.0.1
+    serverAddr.sin_addr.s_addr = inet_addr("127.0.0.1"); // Server IP address
 
-    // Connect to server or show error.
-    if(connect(clientSocket, (struct sockaddr*)&serverAddr, sizeof(serverAddr)) == -1)
-    {
-        std::cerr << "Error connecting" << std::endl;
-        return 1;
-    }
+    // Connect to server.
+    std::cout << "Connecting.." << std::endl;
+    while(connect(clientSocket, (struct sockaddr*)&serverAddr, sizeof(serverAddr)) == -1);
 
     while(true)
     {
