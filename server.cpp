@@ -63,7 +63,7 @@ int main()
             if(bytesRead <= 0)
             {
                 std::cerr << "Error receiving message length" << std::endl;
-                break;
+                return 1;
             }
 
             msgLength = ntohl(msgLength); // Convert network byte order to host byte order.
@@ -73,7 +73,7 @@ int main()
             if(bytesRead <= 0)
             {
                 std::cerr << "Error receiving message" << std::endl;
-                break;
+                return 1;
             }
 
             std::cout << "Received from client " << clientIP << ": " << buffer << std::endl;
@@ -97,7 +97,3 @@ int main()
 
     return 0;
 }
-
-/**
- * Do i need the breaks after error message?
-*/
