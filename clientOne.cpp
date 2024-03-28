@@ -25,17 +25,29 @@ int main()
 
     // Connect to server.
     std::cout << "Connecting.." << std::endl;
-    while(connect(clientSocket, (struct sockaddr*)&serverAddr, sizeof(serverAddr)) == -1);
+    int connectionStatus = connect(clientSocket, reinterpret_cast<struct sockaddr*>(&serverAddr), sizeof(serverAddr));
+    while (connectionStatus == -1)
+    {
+        // If connection failed, retry until successful.
+        connectionStatus = connect(clientSocket, reinterpret_cast<struct sockaddr*>(&serverAddr), sizeof(serverAddr));
+    }
+
+    std::cout << "Connection successful" << std::endl;
 
     while(true)
     {
+        // Get message from the user.
+        std::cout << "Enter your message: ";
+        std::string userMessage;
+        std::getline(std::cin, userMessage);
+
         // Send data to the server.
-        const char* message = "Hello, server -> From client One!";
-        uint32_t msgLeng = htonl(strlen(message)); // Convert message length to nertwork byte order
+        // const char* message = "Hello, server -> From client zero!";
+        uint32_t msgLeng = htonl(userMessage.length()); // Convert message length to nertwork byte order
 
         // Send message length and then the message content.
         send(clientSocket, &msgLeng, sizeof(msgLeng), 0);
-        send(clientSocket, message, strlen(message), 0);
+        send(clientSocket, userMessage.c_str(), userMessage.length(), 0);
 
         // Receive response from server.
         uint32_t responseLength = 0;
@@ -59,7 +71,7 @@ int main()
 
         std::cout << "Response from server " << inet_ntoa(serverAddr.sin_addr) << ": " << buffer << std::endl;
 
-        sleep(1); // Delay between messages (optional)
+        // sleep(1); // Delay between messages (optional)
     }
 
     // Close socket
