@@ -30,7 +30,7 @@ int main()
     while(true)
     {
         // Send data to the server.
-        const char* message = "Hello, server -> From client zero!";
+        const char* message = "Hello, server -> From client One!";
         uint32_t msgLeng = htonl(strlen(message)); // Convert message length to nertwork byte order
 
         // Send message length and then the message content.
