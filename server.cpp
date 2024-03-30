@@ -42,7 +42,6 @@ int main()
     // Stay on and accept client connections in a loop
     while(true)
     {
-        // newSocket = Client connection.
         newSocket = accept(serverSocket, (struct sockaddr*)&clientAddr, &addrSize);
         if(newSocket == -1)
         {
@@ -77,7 +76,7 @@ int main()
         std::cout << "Received from client " << clientIP << ": " << buffer << std::endl;
 
         // Echo message
-        const char* echoMessage = "Hello Back";
+        const char* echoMessage = "Got message";
         uint32_t echoLength = htonl(strlen(echoMessage)); // Convert echo message length to network byte order.
 
         // Send echo back to client.

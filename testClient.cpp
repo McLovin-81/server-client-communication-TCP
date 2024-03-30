@@ -24,8 +24,8 @@ int main()
     serverAddr.sin_addr.s_addr = inet_addr("127.0.0.1"); // Server IP address
 
     // Connect to server.
-    std::cout << "Connecting..." << std::endl;
-    int connectionStatus = connect(clientSocket, reinterpret_cast<struct sockaddr*>(&serverAddr), sizeof(serverAddr)); // TODO: Can i change reinterpret_ca....
+    std::cout << "Connecting.." << std::endl;
+    int connectionStatus = connect(clientSocket, reinterpret_cast<struct sockaddr*>(&serverAddr), sizeof(serverAddr));
     while (connectionStatus == -1)
     {
         // If connection failed, retry until successful.
@@ -40,26 +40,25 @@ int main()
         std::cout << "Enter your message: ";
         std::string userMessage;
         std::getline(std::cin, userMessage);
-std::cout << "1" << std::endl;
+
         // Send data to the server.
+        // const char* message = "Hello, server -> From client zero!";
         uint32_t msgLeng = htonl(userMessage.length()); // Convert message length to nertwork byte order
-std::cout << "2" << std::endl;
+
         // Send message length and then the message content.
         send(clientSocket, &msgLeng, sizeof(msgLeng), 0);
-std::cout << "3" << std::endl;
         send(clientSocket, userMessage.c_str(), userMessage.length(), 0);
-std::cout << "4" << std::endl;
+
         // Receive response from server.
         uint32_t responseLength = 0;
 
         ssize_t bytesRead = recv(clientSocket, &responseLength, sizeof(responseLength), 0);
-std::cout << "5" << bytesRead << std::endl;
         if(bytesRead <= 0)
         {
             std::cerr << "Error receiving message length" << std::endl;
             break;
         }
-std::cout << "6" << std::endl;
+
         responseLength = ntohl(responseLength); // Convert network byte order to host byte order
 
         // Receive Response (echo)
@@ -71,9 +70,8 @@ std::cout << "6" << std::endl;
         }
 
         std::cout << "Response from server " << inet_ntoa(serverAddr.sin_addr) << ": " << buffer << std::endl;
-        
-        // Clear the 'buffer' array for the next iteration.
-        memset(buffer, 0, sizeof(buffer));
+
+        // sleep(1); // Delay between messages (optional)
     }
 
     // Close socket
