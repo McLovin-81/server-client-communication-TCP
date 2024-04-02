@@ -20,7 +20,7 @@ int main()
     }
 
     // Prepare server address structure
-    sockaddr_in server_address;
+    sockaddr_in server_address; // Add struct
     server_address.sin_family = AF_INET;
     server_address.sin_port = htons(54000);  // Port number
     server_address.sin_addr.s_addr = INADDR_ANY;
@@ -68,6 +68,7 @@ void clientHandler(int client_socket)
     while (true)
     {
         memset(buffer, 0, sizeof(buffer));
+        
         int bytes_received = recv(client_socket, buffer, sizeof(buffer), 0);
         if (bytes_received == -1)
         {
@@ -80,7 +81,18 @@ void clientHandler(int client_socket)
             break;
         }
 
-        std::cout << "Client: " << std::string(buffer, 0, bytes_received) << std::endl; // TODO: Show from which client is the message.
+// NEW //
+        std::string clientMessage = std::string(buffer, 0, bytes_received);
+
+        if (clientMessage == "send")
+        {
+            std::string response = "take data";
+            int sendResponse = send(client_socket, response.c_str(), response.size(), 0);
+        }
+
+// NEW //
+
+        std::cout << "Client: " << clientMessage << std::endl; // TODO: Show from which client is the message.
     }
 
     close(client_socket);

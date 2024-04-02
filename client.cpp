@@ -1,4 +1,5 @@
 #include <iostream>
+#include <cstring> // For C-style string manipulation functions (memset: Used to fill memory with a particular value).
 #include <unistd.h> // For POSIX operating system API (System calls like 'close').
 #include <arpa/inet.h> // For functions to manipulate IP addresses (Define the 'struct sockaddr_in' structure and functions like 'inet_addr').
 
@@ -14,7 +15,7 @@ int main()
     }
 
     // Prepare server address structure
-    sockaddr_in server_address;
+    sockaddr_in server_address; // Add struct
     server_address.sin_family = AF_INET;
     server_address.sin_port = htons(54000);  // Port number
     inet_pton(AF_INET, "127.0.0.1", &server_address.sin_addr);
@@ -28,6 +29,8 @@ int main()
 
     // Send messages to server
     std::string message;
+    char buffer[4096];
+
     while (true)
     {
         std::cout << "Enter message: ";
@@ -44,6 +47,26 @@ int main()
             std::cerr << "Error: Could not send message to server" << std::endl;
             break;
         }
+
+
+// NEW //
+        if (message == "send")
+        {
+            memset(buffer, 0, sizeof(buffer)); // Clear buffer array
+            int bytes_received = recv(client_socket, buffer, sizeof(buffer), 0);
+            if (bytes_received == -1)
+            {
+                std::cerr << "Error: Could not receive message from client" << std::endl;
+                break;
+            }
+
+            std::string serverResponse = std::string(buffer, 0, bytes_received);
+            std::cout << serverResponse << std::endl;
+        }
+
+// NEW //
+
+
     }
 
     // Close socket
