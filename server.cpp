@@ -2,94 +2,95 @@
 #include <cstring> // For C-style string manipulation functions (memset: Used to fill memory with a particular value).
 #include <unistd.h> // For POSIX operating system API (System calls like 'close').
 #include <arpa/inet.h> // For functions to manipulate IP addresses (Define the 'struct sockaddr_in' structure and functions like 'inet_addr').
+#include <thread>
+#include <vector>
+
+
+void clientHandler(int client_socket);
+
 
 int main()
 {
-    int serverSocket, newSocket;
-    struct sockaddr_in serverAddr, clientAddr;
-    socklen_t addrSize = sizeof(struct sockaddr_in);
-    char buffer[1024]; // Declare a character array (buffer) to store data sent and received.
-
-    // Create socket using IPv4 address and TCP protocol
-    serverSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-    if(serverSocket == -1)
+    // Create socket
+    int server_socket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+    if (server_socket == -1)
     {
-        std::cerr << "Error creating socket" << std::endl;
+        std::cerr << "Error: Could not create socket" << std::endl;
         return 1;
     }
 
-    // Prepare server address structure.
-    serverAddr.sin_family = AF_INET; // Use IPv4
-    serverAddr.sin_port = htons(23232); // Port number (converted to network byte)
-    serverAddr.sin_addr.s_addr = INADDR_ANY; // Bind to all available interfaces
+    // Prepare server address structure
+    sockaddr_in server_address;
+    server_address.sin_family = AF_INET;
+    server_address.sin_port = htons(54000);  // Port number
+    server_address.sin_addr.s_addr = INADDR_ANY;
 
-    // Bind socket to the specified address and port.
-    if(bind(serverSocket, (struct sockaddr*)&serverAddr, sizeof(serverAddr)) == -1) // Casts the pointer to the serverAddr structure to a pointer of type struct sockaddr*. This is necessary because the bind function expects a pointer to a sockaddr structure as its second argument.
+    // Bind socket
+    if (bind(server_socket, reinterpret_cast<sockaddr*>(&server_address), sizeof(server_address)) == -1)
     {
-        std::cerr << "Error binding" << std::endl;
-        return 1;
-    }
-    
-    // Listen for incoming connections on the socket,
-    // with a maximum backlog of 5 pending connections.
-    if(listen(serverSocket, 5) == -1)
-    {
-        std::cerr << "Error listening" << std::endl;
-        return 1;
-    }
-    std::cout << "Server listening on port 23232..." << std::endl;
-
-    // Stay on and accept client connections in a loop
-    while(true)
-    {
-        newSocket = accept(serverSocket, (struct sockaddr*)&clientAddr, &addrSize);
-        if(newSocket == -1)
-        {
-            std::cerr << "Error accepting connection" << std::endl;
-            return 1;
-        }
-
-        // Get the client's IP address and port
-        char clientIP[INET_ADDRSTRLEN];  // INET_ADDRSTRLEN is a constant for IPv4 address length
-        inet_ntop(AF_INET, &(clientAddr.sin_addr), clientIP, INET_ADDRSTRLEN);
-    
-        // Receive and process messages from the client.
-        uint32_t msgLength = 0;
-        ssize_t bytesRead = recv(newSocket, &msgLength, sizeof(msgLength), 0);
-
-        if(bytesRead <= 0)
-        {
-            std::cerr << "Error receiving message length" << std::endl;
-            return 1;
-        }
-
-        msgLength = ntohl(msgLength); // Convert network byte order to host byte order.
-
-        // Receive the actual message.
-        bytesRead = recv(newSocket, buffer, msgLength, 0);
-        if(bytesRead <= 0)
-        {
-            std::cerr << "Error receiving message" << std::endl;
-            return 1;
-        }
-
-        std::cout << "Received from client " << clientIP << ": " << buffer << std::endl;
-
-        // Echo message
-        const char* echoMessage = "Got message";
-        uint32_t echoLength = htonl(strlen(echoMessage)); // Convert echo message length to network byte order.
-
-        // Send echo back to client.
-        send(newSocket, &echoLength, sizeof(echoLength), 0); // Send the length first
-        send(newSocket, echoMessage, strlen(echoMessage), 0); // Send the echo message itself
-
-        // Clear the 'buffer' array for the next iteration.
-        memset(buffer, 0, sizeof(buffer));
+        std::cerr << "Error: Could not bind socket to IP/Port" << std::endl;
+        return 2;
     }
 
-    // Close sockets. Currently never reached!
-    close(newSocket); // Close this client connection.
-    close(serverSocket);
+    // Listen
+    if (listen(server_socket, SOMAXCONN) == -1)
+    {
+        std::cerr << "Error: Could not listen for connections" << std::endl;
+        return 3;
+    }
+
+    // std::vector<std::thread> client_threads;
+
+    // Accept and handle multiple clients
+    while (true)
+    {
+        int client_socket = accept(server_socket, nullptr, nullptr);
+        if (client_socket == -1)
+        {
+            std::cerr << "Error: Could not accept client connection" << std::endl;
+            continue;
+        }
+
+        std::thread client_thread(clientHandler, client_socket);
+        client_thread.detach(); // Detach thread to allow it to run independently
+    }
+
+    // Close server socket
+    close(server_socket);
 
     return 0;
 }
+
+
+void clientHandler(int client_socket)
+{
+    char buffer[4096];
+    while (true)
+    {
+        memset(buffer, 0, sizeof(buffer));
+        int bytes_received = recv(client_socket, buffer, sizeof(buffer), 0);
+        if (bytes_received == -1)
+        {
+            std::cerr << "Error: Could not receive message from client" << std::endl;
+            break;
+        }
+        else if (bytes_received == 0)
+        {
+            std::cout << "Client disconnected" << std::endl;
+            break;
+        }
+
+        std::cout << "Client: " << std::string(buffer, 0, bytes_received) << std::endl; // TODO: Show from which client is the message.
+    }
+
+    close(client_socket);
+}
+
+// How to compile: g++ multiServer.cpp -o multiServer -lpthread -std=c++20 
+
+
+/*
+        // Get the client's IP address and port
+        char clientIP[INET_ADDRSTRLEN];  // INET_ADDRSTRLEN is a constant for IPv4 address length
+        inet_ntop(AF_INET, &(clientAddr.sin_addr), clientIP, INET_ADDRSTRLEN);
+*/
