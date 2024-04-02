@@ -87,10 +87,3 @@ void clientHandler(int client_socket)
 }
 
 // How to compile: g++ multiServer.cpp -o multiServer -lpthread -std=c++20 
-
-
-/*
-        // Get the client's IP address and port
-        char clientIP[INET_ADDRSTRLEN];  // INET_ADDRSTRLEN is a constant for IPv4 address length
-        inet_ntop(AF_INET, &(clientAddr.sin_addr), clientIP, INET_ADDRSTRLEN);
-*/
