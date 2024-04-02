@@ -15,9 +15,9 @@ int main()
     }
 
     // Prepare server address structure
-    sockaddr_in server_address; // Add struct
+    struct sockaddr_in server_address;
     server_address.sin_family = AF_INET;
-    server_address.sin_port = htons(54000);  // Port number
+    server_address.sin_port = htons(54000);
     inet_pton(AF_INET, "127.0.0.1", &server_address.sin_addr);
 
     // Connect to server
@@ -27,7 +27,7 @@ int main()
         return 2;
     }
 
-    // Send messages to server
+    // Send and receive messages from the server
     std::string message;
     char buffer[4096];
 
@@ -41,6 +41,7 @@ int main()
             break;
         }
 
+        // Send message to server
         int send_result = send(client_socket, message.c_str(), message.size(), 0);
         if (send_result == -1)
         {
@@ -48,8 +49,7 @@ int main()
             break;
         }
 
-
-// NEW //
+        // Receive response from server if message is "send"
         if (message == "send")
         {
             memset(buffer, 0, sizeof(buffer)); // Clear buffer array
@@ -63,10 +63,6 @@ int main()
             std::string serverResponse = std::string(buffer, 0, bytes_received);
             std::cout << serverResponse << std::endl;
         }
-
-// NEW //
-
-
     }
 
     // Close socket
