@@ -6,7 +6,8 @@
 #include <vector>
 
 
-void clientHandler(int client_socket);
+// Function prototypes
+void clientHandler(int client_socket, char clientIP[INET_ADDRSTRLEN]);
 
 
 int main()
@@ -20,7 +21,7 @@ int main()
     }
 
     // Prepare server address structure
-    sockaddr_in server_address;
+    struct sockaddr_in server_address;
     server_address.sin_family = AF_INET;
     server_address.sin_port = htons(54000);  // Port number
     server_address.sin_addr.s_addr = INADDR_ANY;
@@ -29,6 +30,7 @@ int main()
     if (bind(server_socket, reinterpret_cast<sockaddr*>(&server_address), sizeof(server_address)) == -1)
     {
         std::cerr << "Error: Could not bind socket to IP/Port" << std::endl;
+        close(server_socket);
         return 2;
     }
 
@@ -36,10 +38,9 @@ int main()
     if (listen(server_socket, SOMAXCONN) == -1)
     {
         std::cerr << "Error: Could not listen for connections" << std::endl;
+        close(server_socket);
         return 3;
     }
-
-    // std::vector<std::thread> client_threads;
 
     // Accept and handle multiple clients
     while (true)
@@ -51,7 +52,22 @@ int main()
             continue;
         }
 
-        std::thread client_thread(clientHandler, client_socket);
+        // Get client ip
+        struct sockaddr_in clientAddress;
+        socklen_t clientAddressSize = sizeof(clientAddress);
+        if (getpeername(client_socket, reinterpret_cast<sockaddr*>(&clientAddress), &clientAddressSize) == -1)
+        {
+            std::cerr << "Error: Could not get client address" << std::endl;
+            close(client_socket);
+            continue;
+        }
+        char clientIP[INET_ADDRSTRLEN];
+        inet_ntop(AF_INET, &clientAddress.sin_addr, clientIP, INET_ADDRSTRLEN);
+
+        std::cout << "Connected with: " << clientIP << std::endl;
+
+        // Create new thread to handle client
+        std::thread client_thread(clientHandler, client_socket, clientIP);
         client_thread.detach(); // Detach thread to allow it to run independently
     }
 
@@ -62,12 +78,14 @@ int main()
 }
 
 
-void clientHandler(int client_socket)
+// Function to handle client requests
+void clientHandler(int client_socket, char clientIP[INET_ADDRSTRLEN])
 {
     char buffer[4096];
     while (true)
     {
         memset(buffer, 0, sizeof(buffer));
+        
         int bytes_received = recv(client_socket, buffer, sizeof(buffer), 0);
         if (bytes_received == -1)
         {
@@ -76,14 +94,22 @@ void clientHandler(int client_socket)
         }
         else if (bytes_received == 0)
         {
-            std::cout << "Client disconnected" << std::endl;
+            std::cout << "Client " << clientIP << " disconnected" << std::endl;
             break;
         }
 
-        std::cout << "Client: " << std::string(buffer, 0, bytes_received) << std::endl; // TODO: Show from which client is the message.
+        std::string clientMessage = std::string(buffer, 0, bytes_received);
+
+        if (clientMessage == "send")
+        {
+            std::string response = "take data";
+            int sendResponse = send(client_socket, response.c_str(), response.size(), 0);
+        }
+
+        std::cout << "Client " << clientIP << ": " << clientMessage << std::endl;
     }
 
     close(client_socket);
 }
 
-// How to compile: g++ multiServer.cpp -o multiServer -lpthread -std=c++20 
+// How to compile: g++ server.cpp -o server -lpthread -std=c++20 
